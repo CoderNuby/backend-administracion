@@ -1,0 +1,1 @@
+module.exports.SEED = 'backendserver-seed-unico-in-unique';
