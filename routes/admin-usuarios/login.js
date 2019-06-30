@@ -1,14 +1,14 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 var jwt = require('jsonwebtoken');
-var SEED = require('../config/config').SEED;
+var SEED = require('../../config/config').SEED;
 
 var app = express();
 
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
 
-var Usuario = require('../models/usuario');
+var Usuario = require('../../models/usuario');
 
 /*
 	se envia por el body el email y password
@@ -43,6 +43,9 @@ app.post('/', (req, res) => {
 		//Crear token
 		var token = jwt.sign({ usuario: usuarioDB}, SEED, {expiresIn: 14400});
 
+        /*
+         * Cuidado con enviar la contraseña por la respuesta
+         */
 
 		res.status(200).json({
 			ok: true,

@@ -1,20 +1,23 @@
 var express = require('express');
 var bcrypt = require('bcryptjs');
 
-var mdAutenticacion = require('../middlewares/autenticacion');
+var mdAutenticacion = require('../../middlewares/autenticacion');
 
 var app = express();
 
-var Usuario = require('../models/usuario');
-
-app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+var Usuario = require('../../models/usuario');
 
 
 
 
+/*
+ nesesita token como medida de seguridad
+ */
 //Obtener Usuarios
-app.get('/', (req, res, next) => {
-	
+app.get('/', mdAutenticacion.verificarToken, (req, res, next) => {
+
+
+	/*Busca todo de la coleccion de usuario*/
 	Usuario.find({}, 'nombre email imagen role').exec((err, usuario) => {
         if (err) {
             return res.status(500).json({
@@ -101,14 +104,19 @@ app.post('/', mdAutenticacion.verificarToken, (req, res, next) => {
             mensaje: 'No autorizado para crear usuario-USER_ROLE'
         });
     }
-
+    
 	var usuario = new Usuario({
 		nombre: body.nombre,
 		email: body.email,
 		password: bcrypt.hashSync(body.password, 10),
 		imagen: body.imagen,
 		role:body.role
-	});
+    });
+
+    /*
+     * cuidado!!
+     * cambiar el codigo para que no se envie el password en la respuesta
+     */
 
 	usuario.save((err, usuarioGuardado) => {
 		if(err){
